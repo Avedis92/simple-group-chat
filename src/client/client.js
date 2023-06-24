@@ -8,9 +8,9 @@ ws.addEventListener('open', () => {
     console.log('A new connection is established');
 });
 
-ws.addEventListener('message', (data) => {
+ws.addEventListener('message', (message) => {
     const messageElement = document.createElement('div');
-    messageElement.innerHTML = data;
+    messageElement.innerText = message.data;
     messageList.appendChild(messageElement);
 });
 
