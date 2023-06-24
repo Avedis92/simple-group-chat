@@ -1,4 +1,4 @@
-const { WebSocketServer } = require('ws');
+const WebSocket = require('ws');
 const http = require('http');
 
 const onSocketError = (err) => {
@@ -6,11 +6,21 @@ const onSocketError = (err) => {
 };
 
 const httpServer = http.createServer();
+const wsServer = WebSocket.Server;
 const port = 3000;
+const host = 'localhost';
 
-const wss = new WebSocketServer({ noServer:true });
+const wss = new wsServer({ noServer:true });
 wss.on('connection', (ws, req) => {
     console.log('connected');
+    ws.on('message', (data) => {
+        console.log(data.toString());
+        wss.clients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(data.toString());
+            }
+        });
+    });
 });
 
 httpServer.on('upgrade', (req, socket, head) => {
@@ -21,6 +31,6 @@ httpServer.on('upgrade', (req, socket, head) => {
     });
 });
 
-httpServer.listen(port, () => {
+httpServer.listen(port, host, () => {
     console.log(`server listening on port ${port}`);
 });
